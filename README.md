@@ -1,70 +1,85 @@
-# Getting Started with Create React App
+<div style="background-color: #083344d9; display: flex; justify-content: center; align-items: center; padding: 10px; margin-bottom: 10px">
+  <p align="center">
+    <img src="https://img.shields.io/github/package-json/dependency-version/code-serg/use-effect-ref-layout/react?color=blue" alt="react-js-version">
+  </p>
+</div>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# useEffect(), useRef(), and useLayoutEffect()
 
-## Available Scripts
+## useEffect
 
-In the project directory, you can run:
+### Purpose:
 
-### `npm start`
+Allows you to perform side effects in function components. <br>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### How it works:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Executes the provided function after the component renders. <br>
+Can be used for various purposes like data fetching, setting up subscriptions, manually changing the DOM, etc.
 
-### `npm test`
+```
+useEffect(() => {
+  // code to run after component renders
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+  return () => {
+    // cleanup code (optional)
+  };
+}, [dependency1, dependency2]); // runs when values in dependency list change
+```
 
-### `npm run build`
+- If the dependency list is omitted, the effect runs after every render.
+- If the dependency list is empty ([]), the effect runs once after the initial render
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## useRef
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Purpose:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Provides a way to access the DOM directly and persist values without triggering a re-render.
 
-### `npm run eject`
+### How it works:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Returns a mutable ref object with a current property.
+Unlike state, changes to a ref don't cause the component to re-render.
+Basic Usage:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+const inputRef = useRef(null);
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+return <input ref={inputRef} />;
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- You can then use inputRef.current to access the input element directly.
 
-## Learn More
+## useLayoutEffect
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Purpose:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Similar to useEffect, but it fires synchronously after all DOM mutations, making it suitable for reading layout from the DOM and synchronously re-rendering.
 
-### Code Splitting
+### How it works:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Runs synchronously immediately after React has performed all DOM updates.
+If you're familiar with the class component lifecycle, it's a combination of componentDidMount, componentDidUpdate, and componentWillUnmount, but it fires in the same phase as browser layout.
 
-### Analyzing the Bundle Size
+```
+useLayoutEffect(() => {
+  // code to run after the DOM updates but before the browser paints
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+  return () => {
+    // cleanup code (optional)
+  };
+}, [dependency1, dependency2]);
+```
 
-### Making a Progressive Web App
+<br>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## When to use useLayoutEffect over useEffect?
 
-### Advanced Configuration
+In most cases, useEffect is what you'll need.
+useLayoutEffect is beneficial when you need to make DOM measurements (like getting the position of an element) and then make DOM mutations based on that (like setting an element's position). Using useEffect in such cases might lead to flickering effects since it runs after the browser paint.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## In summary:
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- useEffect: Side effects, asynchronous, non-blocking.
+- useRef: Access DOM or keep a mutable reference without causing re-renders.
+- useLayoutEffect: Synchronous side effects, useful when you need to measure and then modify the DOM.
