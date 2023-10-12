@@ -1,23 +1,18 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import { useFetch } from './useFetch';
 import './App.css';
 
 function App() {
+  const [url, setUrl] = useState(null);
+  const data = useFetch({ url, onSuccess: () => console.log('yay') });
+  console.log('App rendering');
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      hello world
+      <div>{JSON.stringify(data)}</div>
+      <button onClick={() => setUrl('./srg.json')}>load SRG</button>
+      <button onClick={() => setUrl('./sally.json')}>load Sally</button>
     </div>
   );
 }
