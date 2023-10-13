@@ -14,8 +14,8 @@ Allows you to perform side effects in function components. <br>
 
 ### How it works:
 
-Executes the provided function after the component renders. <br>
-Can be used for various purposes like data fetching, setting up subscriptions, manually changing the DOM, etc.
+- Executes the provided function after the component renders. <br>
+- Can be used for various purposes like data fetching, setting up subscriptions, manually changing the DOM, etc.
 
 ```
 useEffect(() => {
@@ -30,48 +30,33 @@ useEffect(() => {
 - If the dependency list is omitted, the effect runs after every render.
 - If the dependency list is empty ([]), the effect runs once after the initial render
 
-## useRef
+## useRef, useEffectLayout, and an example of a callback
 
 ### Purpose:
 
-Provides a way to access the DOM directly and persist values without triggering a re-render.
+- useRef: Provides a way to access the DOM directly and persist values without triggering a re-render.
+- useLayoutEffect: Similar to useEffect, but it fires synchronously after all DOM mutations, making it suitable for reading layout from the DOM and synchronously re-rendering
 
 ### How it works:
 
-Returns a mutable ref object with a current property.
-Unlike state, changes to a ref don't cause the component to re-render.
-Basic Usage:
+- useRef: Returns a mutable ref object with a current property. Changes to a ref don't cause the component to re-render.
+- useLayoutEffect: Runs synchronously immediately after React has performed all DOM updates.
 
 ```
-const inputRef = useRef(null);
-
-return <input ref={inputRef} />;
-```
-
-- You can then use inputRef.current to access the input element directly.
-
-## useLayoutEffect
-
-### Purpose:
-
-Similar to useEffect, but it fires synchronously after all DOM mutations, making it suitable for reading layout from the DOM and synchronously re-rendering.
-
-### How it works:
-
-Runs synchronously immediately after React has performed all DOM updates.
-If you're familiar with the class component lifecycle, it's a combination of componentDidMount, componentDidUpdate, and componentWillUnmount, but it fires in the same phase as browser layout.
-
-```
-useLayoutEffect(() => {
+const useCallbackRef = (callback) => {
   // code to run after the DOM updates but before the browser paints
+  // Create a ref to hold the callback.
+  const callbackRef = useRef(callback);
 
-  return () => {
-    // cleanup code (optional)
-  };
-}, [dependency1, dependency2]);
+  // Use the useLayoutEffect hook to update the ref's current value with the latest version of the callback whenever the callback changes.
+  useLayoutEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
+
+  // Return the ref so the caller can access the latest callback via callbackRef.current.
+  return callbackRef;
+};
 ```
-
-<br>
 
 ## When to use useLayoutEffect over useEffect?
 
